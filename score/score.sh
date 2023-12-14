@@ -4,7 +4,7 @@ echo "This is a simple score shell script for you to find out problems in your p
 echo "--------------------------------------------------------------------------------"
 
 L=1
-R=119
+R=0
 for ((i = $L; i <= $R; i = i + 1))
 do
     echo ""
@@ -23,13 +23,13 @@ EOF
         echo "Wrong answer in TEST" $i
         # echo "---------------------------"
         # echo ""
-        # exit 1
+         exit 1
     fi
     echo "---------------------------"
     echo ""
 done
 
-L_EXTRA=1
+L_EXTRA=7
 R_EXTRA=7
 for ((i = $L_EXTRA; i <= $R_EXTRA; i = i + 1))
 do

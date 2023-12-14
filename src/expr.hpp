@@ -11,7 +11,9 @@
 struct ExprBase {
 	ExprType e_type;
 	ExprBase(ExprType);
-	virtual Value eval(Assoc &) = 0;
+	// delete the virtual function = 0
+	// in order to make ExprBase able to be a return value!
+	virtual Value eval(Assoc &);
 	virtual ~ExprBase() = default;
 };
 

@@ -9,8 +9,16 @@
 
 extern std :: map<std :: string, ExprType> primitives;
 extern std :: map<std :: string, ExprType> reserved_words;
-using std::vector, std::string;
+using std :: vector;
+using std :: string;
+using std :: cerr;
+using std :: endl;
 
+Value ExprBase::eval(Assoc & env)
+{
+	throw RuntimeError("illegal expression !");
+	// something wrong while parsing
+}
 Value Let::eval(Assoc &env)
 {
 	Assoc e = env;
@@ -33,10 +41,10 @@ Value Apply::eval(Assoc &e)
 	Value val = rator->eval(ee);
 
 	if (val->v_type != V_PROC)
-		throw RuntimeError("parameter error, expected a procedure");
+		throw RuntimeError("parameter error, expected a procedure ");
 	Closure *clsr = dynamic_cast <Closure *> (val.get());
 	if (clsr->parameters.size() != rand.size())
-		throw RuntimeError("the number of paramters is illgeal");
+		throw RuntimeError("the number of paramters is illgeal ");
 	Assoc env = clsr->env;
 	int sz = clsr->parameters.size();
 	for (int i = 0; i < sz; i++) {
@@ -64,7 +72,7 @@ Value Var::eval(Assoc &e)
 	Value val = find(x, e);
 
 	if (val.get() == nullptr)
-		throw RuntimeError("varible not found");
+		throw RuntimeError("varible not found ");
 	return val;
 }                            // evaluation of variable
 
@@ -72,14 +80,21 @@ Value Fixnum::eval(Assoc &e)
 {
 	return Value(new Integer(n));
 }                               // evaluation of a fixnum
-
+// it is necessary to check the type of the value
+// only #f return false
+bool is_true(const Value &v)
+{
+	if (v->v_type != V_BOOL)
+		return true;
+	Boolean *bl = dynamic_cast <Boolean *> (v.get());
+	return bl->b == true;
+}
 Value If::eval(Assoc &e)
 {
-	Assoc ee = e;
-	Value res = cond->eval(e);
-	Boolean *Res = dynamic_cast <Boolean *> (res.get());
+	Assoc ee = e, env = e;
+	Value res = cond->eval(env);
 
-	if (Res->b == true)
+	if (is_true(res) == true)
 		return conseq->eval(ee);
 	else return alter->eval(ee);
 }                           // if expression
@@ -104,11 +119,37 @@ Value Begin::eval(Assoc &e)
 	}
 	return res;
 }                              // begin expression
-
+// to eval the quote
+// we need to tell list and other types apart
+// then to eval the list of it
+// we need recursion to solve the list occasion
+Value quote_normal(const Syntax &s, Assoc &e);
+Value quote_list(const vector <Syntax> &s, int pos, Assoc &e)
+{
+	if (!s.size()) return Value(new Null());
+	if (pos == s.size()) return Value(new Null());
+	return Value(new Pair(quote_normal(s[pos], e), quote_list(s, pos + 1, e)));
+}                              // quote expression
+Value quote_normal(const Syntax &s, Assoc &e)
+{
+	if (Number *val = dynamic_cast <Number *> (s.get()))
+		return Value(new Integer(val->n));
+	if (Identifier *val = dynamic_cast <Identifier *> (s.get()))
+		return Value(new Symbol(val->s));
+	if (TrueSyntax *val = dynamic_cast <TrueSyntax *> (s.get()))
+		return Value(new Boolean(true));
+	if (FalseSyntax *val = dynamic_cast <FalseSyntax *> (s.get()))
+		return Value(new Boolean(false));
+	if (List *val = dynamic_cast <List *> (s.get()))
+		return quote_list(val->stxs, 0, e);
+	throw RuntimeError("wrong quote parameter!");
+}
 Value Quote::eval(Assoc &e)
 {
-}                              // quote expression
+	Assoc ee = e;
 
+	return quote_normal(s, ee);
+}
 Value MakeVoid::eval(Assoc &e)
 {
 	return Value(new Void());
@@ -124,7 +165,7 @@ Value Binary::eval(Assoc &e)
 	Assoc e1 = e, e2 = e;
 	Value val1 = rand1->eval(e1), val2 = rand2->eval(e2);
 
-	return Value(evalRator(val1, val2));
+	return evalRator(val1, val2);
 }                               // evaluation of two-operators primitive
 
 Value Unary::eval(Assoc &e)
@@ -191,16 +232,17 @@ Value Equal::evalRator(const Value &rand1, const Value &rand2)
 Value GreaterEq::evalRator(const Value &rand1, const Value &rand2)
 {
 	if (rand1->v_type != V_INT || rand2->v_type != V_INT)
-		throw RuntimeError("parameter error!");
+		throw RuntimeError("parameter error !");
 	Integer *val1 = dynamic_cast <Integer *> (rand1.get());
 	Integer *val2 = dynamic_cast <Integer *> (rand2.get());
+	// cerr << val1->n << " " << val2->n << endl;
 	return Value(new Boolean((val1->n) >= (val2->n)));
 }                                                                     // >=
 
 Value Greater::evalRator(const Value &rand1, const Value &rand2)
 {
 	if (rand1->v_type != V_INT || rand2->v_type != V_INT)
-		throw RuntimeError("parameter error!");
+		throw RuntimeError("parameter error !");
 	Integer *val1 = dynamic_cast <Integer *> (rand1.get());
 	Integer *val2 = dynamic_cast <Integer *> (rand2.get());
 	return Value(new Boolean((val1->n) > (val2->n)));
@@ -275,9 +317,7 @@ Value IsProcedure::evalRator(const Value &rand)
 
 Value Not::evalRator(const Value &rand)
 {
-	Boolean *val = dynamic_cast <Boolean *> (rand.get());
-
-	return Value(new Boolean(!val->b));
+	return Value(new Boolean(!is_true(rand)));
 }                                          // not
 
 Value Car::evalRator(const Value &rand)

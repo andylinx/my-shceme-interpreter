@@ -21,4 +21,5 @@ add_executable(myscheme ${SOURCES})
 target_compile_options(myscheme
   PRIVATE
     -g
+    --std=c++17
 )
