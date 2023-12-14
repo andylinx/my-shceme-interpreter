@@ -1,0 +1,3 @@
+/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/score/CMakeFiles/rebuild_cache.dir
+/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/score/CMakeFiles/edit_cache.dir
+/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/score/CMakeFiles/myscheme.dir

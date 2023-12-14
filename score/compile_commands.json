@@ -1,0 +1,42 @@
+[
+{
+  "directory": "/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/score",
+  "command": "/usr/bin/c++      -g -pthread -o CMakeFiles/myscheme.dir/src/main.cpp.o -c /mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/src/main.cpp",
+  "file": "/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/src/main.cpp"
+},
+{
+  "directory": "/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/score",
+  "command": "/usr/bin/c++      -g -pthread -o CMakeFiles/myscheme.dir/src/syntax.cpp.o -c /mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/src/syntax.cpp",
+  "file": "/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/src/syntax.cpp"
+},
+{
+  "directory": "/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/score",
+  "command": "/usr/bin/c++      -g -pthread -o CMakeFiles/myscheme.dir/src/RE.cpp.o -c /mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/src/RE.cpp",
+  "file": "/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/src/RE.cpp"
+},
+{
+  "directory": "/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/score",
+  "command": "/usr/bin/c++      -g -pthread -o CMakeFiles/myscheme.dir/src/parser.cpp.o -c /mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/src/parser.cpp",
+  "file": "/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/src/parser.cpp"
+},
+{
+  "directory": "/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/score",
+  "command": "/usr/bin/c++      -g -pthread -o CMakeFiles/myscheme.dir/src/expr.cpp.o -c /mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/src/expr.cpp",
+  "file": "/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/src/expr.cpp"
+},
+{
+  "directory": "/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/score",
+  "command": "/usr/bin/c++      -g -pthread -o CMakeFiles/myscheme.dir/src/value.cpp.o -c /mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/src/value.cpp",
+  "file": "/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/src/value.cpp"
+},
+{
+  "directory": "/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/score",
+  "command": "/usr/bin/c++      -g -pthread -o CMakeFiles/myscheme.dir/src/evaluation.cpp.o -c /mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/src/evaluation.cpp",
+  "file": "/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/src/evaluation.cpp"
+},
+{
+  "directory": "/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/score",
+  "command": "/usr/bin/c++      -g -pthread -o CMakeFiles/myscheme.dir/src/Def.cpp.o -c /mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/src/Def.cpp",
+  "file": "/mnt/d/code/Scheme-Interpreter-main/my-shceme-interpreter/src/Def.cpp"
+}
+]
