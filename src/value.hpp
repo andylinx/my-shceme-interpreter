@@ -8,6 +8,8 @@
 #include <cstring>
 #include <vector>
 
+#define Lazy_tag
+
 struct ValueBase {
 	ValueType v_type;
 	ValueBase(ValueType);
@@ -33,13 +35,23 @@ struct Assoc {
 	AssocList * get() const;
 };
 
+#ifndef Lazy_tag
 struct AssocList {
 	std::string	x;
 	Value		v;
 	Assoc		next;
 	AssocList(const std::string &, const Value &, Assoc &);
 };
-
+#else
+struct AssocList {
+	std::string	x;
+	Value		v;
+	Expr		ex;
+	bool		flag; // whether this parameter has been calculated yet
+	Assoc		ee, next;
+	AssocList(const std::string &, const Value &, const Expr &, Assoc &, Assoc &);
+};
+#endif
 struct Void : ValueBase {
 	Void();
 	virtual void show(std::ostream &) override;
@@ -108,7 +120,11 @@ Value StringV(const std :: string &);
 std::ostream &operator<<(std::ostream &, Value &);
 
 Assoc empty();
+#ifndef Lazy_tag
 Assoc extend(const std :: string&, const Value &, Assoc &);
+#else
+Assoc extend(const std :: string&, const Value &, const Expr &, Assoc &, Assoc &);
+#endif
 void modify(const std :: string&, const Value &, Assoc &);
 Value find(const std::string &, Assoc &);
 #endif

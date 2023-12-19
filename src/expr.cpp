@@ -153,7 +153,7 @@ IsProcedure :: IsProcedure(const Expr &r1) : Unary(E_PROCQ, r1)
 Not :: Not(const Expr &r1) : Unary(E_NOT, r1)
 {
 }
-
+#ifndef Lazy_tag
 Car :: Car(const Expr &r1) : Unary(E_CAR, r1)
 {
 }
@@ -161,3 +161,13 @@ Car :: Car(const Expr &r1) : Unary(E_CAR, r1)
 Cdr :: Cdr(const Expr &r1) : Unary(E_CDR, r1)
 {
 }
+
+#else
+Car :: Car(const Expr &r1) : ExprBase(E_CAR), ex(r1)
+{
+}
+
+Cdr :: Cdr(const Expr &r1) : ExprBase(E_CDR), ex(r1)
+{
+}
+#endif

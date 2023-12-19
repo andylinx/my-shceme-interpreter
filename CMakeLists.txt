@@ -23,3 +23,4 @@ target_compile_options(myscheme
     -g
     -pthread
 )
+add_definitions(-w)

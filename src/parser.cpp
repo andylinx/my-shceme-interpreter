@@ -2,7 +2,6 @@
 #define PARSER
 
 // parser of myscheme
-
 #include "RE.hpp"
 #include "Def.hpp"
 #include "syntax.hpp"
@@ -19,7 +18,7 @@ using std :: cerr;
 using std :: endl;
 extern std :: map<std :: string, ExprType> primitives;
 extern std :: map<std :: string, ExprType> reserved_words;
-
+Expr holder = Expr(new MakeVoid());
 Expr Syntax :: parse(Assoc &env)
 {
 	return (*(this->ptr)).parse(env);
@@ -41,7 +40,11 @@ Expr Identifier :: parse(Assoc &env)
 		return Expr(new ExprBase(reserved_words[s]));
 	if (primitives.find(s) != primitives.end())
 		return Expr(new ExprBase(primitives[s]));
+#ifdef Lazy_tag
+	env = extend(s, IntegerV(0), holder, env, env);
+#else
 	env = extend(s, IntegerV(0), env);
+#endif
 	return Expr(new Var(s));
 }
 
@@ -93,7 +96,11 @@ Expr List :: parse(Assoc &env)
 				throw RuntimeError("invalid format of let!");
 			Identifier *v = dynamic_cast <Identifier *> (ele->stxs[0].get());
 			if (!v) throw RuntimeError("invalid format of let!");
+#ifdef Lazy_tag
+			ee = extend(v->s, IntegerV(0), holder, ee, ee);
+#else
 			ee = extend(v->s, IntegerV(0), ee);
+#endif
 			Assoc e2 = env;
 			res.push_back({ v->s, ele->stxs[1]->parse(e2) });
 		}
@@ -112,7 +119,11 @@ Expr List :: parse(Assoc &env)
 		for (auto & sy:lst->stxs) {
 			Identifier *v = dynamic_cast <Identifier *> (sy.get());
 			if (!v) throw RuntimeError("invalid format of let!");
+#ifdef Lazy_tag
+			ee = extend(v->s, IntegerV(0), holder, ee, ee);
+#else
 			ee = extend(v->s, IntegerV(0), ee);
+#endif
 			res.push_back(v->s);
 		}
 		Expr body = u[2]->parse(ee);
@@ -133,7 +144,11 @@ Expr List :: parse(Assoc &env)
 				throw RuntimeError("invalid format of let!");
 			Identifier *v = dynamic_cast <Identifier *> (ele->stxs[0].get());
 			if (!v) throw RuntimeError("invalid format of let!");
+#ifdef Lazy_tag
+			ee = extend(v->s, IntegerV(0), holder, ee, ee);
+#else
 			ee = extend(v->s, IntegerV(0), ee);
+#endif
 		}
 		for (auto &sy : lst->stxs) {
 			List *ele = dynamic_cast <List *> (sy.get());

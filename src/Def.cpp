@@ -3,6 +3,8 @@
 std :: map<std :: string, ExprType> primitives;
 std :: map<std :: string, ExprType> reserved_words;
 
+#define Lazy_tag
+
 void initPrimitives()
 {
 	// primitives stores all procedures in library, mapping them to ExprTypes
@@ -14,7 +16,6 @@ void initPrimitives()
 	primitives["="] = E_EQ;
 	primitives[">="] = E_GE;
 	primitives[">"] = E_GT;
-
 	primitives["void"] = E_VOID;
 	primitives["eq?"] = E_EQQ;
 	primitives["boolean?"] = E_BOOLQ;
