@@ -93,9 +93,9 @@ void reset(T *pointer)
 }
 };
 
-template <typename T, typename ...A>
-T * make_shared(A && ... a)
+template <typename T, typename ... Args>
+SharedPtr<T> make_shared(Args&&... args)
 {
-	return new T(std::forward<A>(a)...);
+	return SharedPtr <T>(new T(std :: forward<Args>(args) ...));
 }
 #endif

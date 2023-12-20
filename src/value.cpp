@@ -6,6 +6,7 @@ AssocList::AssocList(const std::string &x, const Value &v, Assoc &next)
 {
 }
 #else
+// if you want to optimize the evaluation of the parameters, we need to store the expression and the environment
 AssocList::AssocList(const std::string &x, const Value &v, const Expr &ex, Assoc &now, Assoc &next)
 	: x(x), v(v), ex(ex), next(next), ee(now), flag(false)
 {
@@ -52,7 +53,6 @@ void modify(const std::string &x, const Value &v, Assoc &lst)
 		}
 }
 #else
-
 Assoc extend(const std::string &x, const Value &v, const Expr &ex, Assoc &ee, Assoc &lst)
 {
 	return Assoc(new AssocList(x, v, ex, ee, lst));
@@ -66,6 +66,8 @@ void modify(const std::string &x, const Value &v, Assoc &lst)
 			return;
 		}
 }
+// find the value of the parameter
+// if not calculated, calculate it and store it
 Value find(const std::string &x, Assoc &l)
 {
 	for (auto i = l; i.get() != nullptr; i = i->next)

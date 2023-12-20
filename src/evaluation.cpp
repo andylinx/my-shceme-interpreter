@@ -350,7 +350,7 @@ Value Cdr::evalRator(const Value &rand)
 	return val->cdr;
 }                                          // cdr
 #else
-
+// we only need to cacluate half of the car and cdr
 Value Car::eval(Assoc &e)
 {
 	Quote *tmp = dynamic_cast <Quote *> (ex.get());
