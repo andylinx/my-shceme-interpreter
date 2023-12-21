@@ -60,8 +60,12 @@ Value Letrec::eval(Assoc &env)
 {
 	Assoc ee = env;
 
-	for (auto &[x, y]:bind)
-		ee = extend(x, Value(nullptr), ee);
+	for (auto &[x, y]:bind) {
+		ee = extend(x, Real_VoidV(), ee);
+		Value val = y->eval(ee);
+		Real_Void *rv = dynamic_cast <Real_Void *> (val.get());
+		if (rv) throw RuntimeError("parameter not defined yet!");
+	}
 	for (auto &[x, y]:bind)
 		modify(x, y->eval(ee), ee);
 	return body->eval(ee);

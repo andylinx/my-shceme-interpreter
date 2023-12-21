@@ -33,7 +33,7 @@ Expr Number :: parse(Assoc &env)
 Expr Identifier :: parse(Assoc &env)
 {
 	// to solve the problem of some variables of env maybe not defined
-	// we let all the varibles be Integer 0 at first!
+	// we let all the varibles be Real_Void at first!
 	// it won't result in any error, because it will be overrided later.
 	if (find(s, env).get() != nullptr)
 		return Expr(new Var(s));
@@ -41,7 +41,7 @@ Expr Identifier :: parse(Assoc &env)
 		return Expr(new ExprBase(reserved_words[s]));
 	if (primitives.find(s) != primitives.end())
 		return Expr(new ExprBase(primitives[s]));
-	env = extend(s, IntegerV(0), env);
+	env = extend(s, Real_VoidV(), env);
 	return Expr(new Var(s));
 }
 
@@ -93,7 +93,7 @@ Expr List :: parse(Assoc &env)
 				throw RuntimeError("invalid format of let!");
 			Identifier *v = dynamic_cast <Identifier *> (ele->stxs[0].get());
 			if (!v) throw RuntimeError("invalid format of let!");
-			ee = extend(v->s, IntegerV(0), ee);
+			ee = extend(v->s, Real_VoidV(), ee);
 			Assoc e2 = env;
 			res.push_back({ v->s, ele->stxs[1]->parse(e2) });
 		}
@@ -106,13 +106,13 @@ Expr List :: parse(Assoc &env)
 		if (u.size() != 3)
 			throw RuntimeError("invalid number of parameters");
 		List *lst = dynamic_cast <List *> (u[1].get());
-		if (!lst) throw RuntimeError("invalid format of let!");
+		if (!lst) throw RuntimeError("invalid format of lambda!");
 		vector <string> res;
 		Assoc ee = e;
 		for (auto & sy:lst->stxs) {
 			Identifier *v = dynamic_cast <Identifier *> (sy.get());
-			if (!v) throw RuntimeError("invalid format of let!");
-			ee = extend(v->s, IntegerV(0), ee);
+			if (!v) throw RuntimeError("invalid format of lambda!");
+			ee = extend(v->s, Real_VoidV(), ee);
 			res.push_back(v->s);
 		}
 		Expr body = u[2]->parse(ee);
@@ -124,16 +124,16 @@ Expr List :: parse(Assoc &env)
 		if (u.size() != 3)
 			throw RuntimeError("invalid number of parameters");
 		List *lst = dynamic_cast <List *> (u[1].get());
-		if (!lst) throw RuntimeError("invalid format of let!");
+		if (!lst) throw RuntimeError("invalid format of letrec!");
 		vector <pair<string, Expr> > res;
 		Assoc ee = env;
 		for (auto &sy : lst->stxs) {
 			List *ele = dynamic_cast <List *> (sy.get());
 			if (!ele || ele->stxs.size() != 2)
-				throw RuntimeError("invalid format of let!");
+				throw RuntimeError("invalid format of letrec!");
 			Identifier *v = dynamic_cast <Identifier *> (ele->stxs[0].get());
-			if (!v) throw RuntimeError("invalid format of let!");
-			ee = extend(v->s, IntegerV(0), ee);
+			if (!v) throw RuntimeError("invalid format of letrec!");
+			ee = extend(v->s, Real_VoidV(), ee);
 		}
 		for (auto &sy : lst->stxs) {
 			List *ele = dynamic_cast <List *> (sy.get());

@@ -21,5 +21,6 @@ add_executable(myscheme ${SOURCES})
 target_compile_options(myscheme
   PRIVATE
     -g
-    -pthread
 )
+
+add_definitions(-w)
