@@ -2,7 +2,6 @@
 #define PARSER
 
 // parser of myscheme
-
 #include "RE.hpp"
 #include "Def.hpp"
 #include "syntax.hpp"
@@ -19,7 +18,7 @@ using std :: cerr;
 using std :: endl;
 extern std :: map<std :: string, ExprType> primitives;
 extern std :: map<std :: string, ExprType> reserved_words;
-
+Expr holder = Expr(new MakeVoid());
 Expr Syntax :: parse(Assoc &env)
 {
 	return (*(this->ptr)).parse(env);
@@ -41,7 +40,15 @@ Expr Identifier :: parse(Assoc &env)
 		return Expr(new ExprBase(reserved_words[s]));
 	if (primitives.find(s) != primitives.end())
 		return Expr(new ExprBase(primitives[s]));
-	env = extend(s, Real_VoidV(), env);
+		<< << << < HEAD
+		env = extend(s, Real_VoidV(), env);
+	== == == =
+#ifdef Lazy_tag
+		env = extend(s, IntegerV(0), holder, env, env);
+#else
+		env = extend(s, IntegerV(0), env);
+#endif
+	>> >> >> > Extension
 	return Expr(new Var(s));
 }
 
@@ -93,7 +100,15 @@ Expr List :: parse(Assoc &env)
 				throw RuntimeError("invalid format of let!");
 			Identifier *v = dynamic_cast <Identifier *> (ele->stxs[0].get());
 			if (!v) throw RuntimeError("invalid format of let!");
-			ee = extend(v->s, Real_VoidV(), ee);
+				<< << << < HEAD
+				ee = extend(v->s, Real_VoidV(), ee);
+			== == == =
+#ifdef Lazy_tag
+				ee = extend(v->s, IntegerV(0), holder, ee, ee);
+#else
+				ee = extend(v->s, IntegerV(0), ee);
+#endif
+			>> >> >> > Extension
 			Assoc e2 = env;
 			res.push_back({ v->s, ele->stxs[1]->parse(e2) });
 		}
@@ -111,8 +126,17 @@ Expr List :: parse(Assoc &env)
 		Assoc ee = e;
 		for (auto & sy:lst->stxs) {
 			Identifier *v = dynamic_cast <Identifier *> (sy.get());
-			if (!v) throw RuntimeError("invalid format of lambda!");
-			ee = extend(v->s, Real_VoidV(), ee);
+				<< << << < HEAD
+				if (!v) throw RuntimeError("invalid format of lambda!");
+				ee = extend(v->s, Real_VoidV(), ee);
+			== == == =
+				if (!v) throw RuntimeError("invalid format of let!");
+#ifdef Lazy_tag
+			ee = extend(v->s, IntegerV(0), holder, ee, ee);
+#else
+			ee = extend(v->s, IntegerV(0), ee);
+#endif
+			>> >> >> > Extension
 			res.push_back(v->s);
 		}
 		Expr body = u[2]->parse(ee);
@@ -132,8 +156,12 @@ Expr List :: parse(Assoc &env)
 			if (!ele || ele->stxs.size() != 2)
 				throw RuntimeError("invalid format of letrec!");
 			Identifier *v = dynamic_cast <Identifier *> (ele->stxs[0].get());
-			if (!v) throw RuntimeError("invalid format of letrec!");
-			ee = extend(v->s, Real_VoidV(), ee);
+			if (!v) throw RuntimeError("invalid format of let!");
+#ifdef Lazy_tag
+			ee = extend(v->s, Real_VoidV(), holder, ee, ee);
+#else
+			ee = extend(v->s, Real_VoidV(0), ee);
+#endif
 		}
 		for (auto &sy : lst->stxs) {
 			List *ele = dynamic_cast <List *> (sy.get());

@@ -8,6 +8,8 @@
 #include <cstring>
 #include <vector>
 
+#define Lazy_tag
+
 struct ExprBase {
 	ExprType e_type;
 	ExprBase(ExprType);
@@ -112,7 +114,6 @@ struct Binary : ExprBase {
 	virtual Value evalRator(const Value &, const Value &) = 0;
 	virtual Value eval(Assoc &) override;
 };
-
 struct Unary : ExprBase {
 	Expr rand;
 	Unary(ExprType, const Expr &);
@@ -204,15 +205,32 @@ struct Not : Unary {
 	Not(const Expr &);
 	virtual Value evalRator(const Value &) override;
 };
-
+#ifndef Lazy_tag
 struct Car : Unary {
 	Car(const Expr &);
 	virtual Value evalRator(const Value &) override;
+	Value evalRator(const Expr &);
 };
 
 struct Cdr : Unary {
 	Cdr(const Expr &);
 	virtual Value evalRator(const Value &) override;
+	Value evalRator(const Expr &);
 };
+
+#else
+
+struct  Car : ExprBase {
+	Expr ex;
+	Car(const Expr &);
+	virtual Value eval(Assoc &) override;
+};
+struct  Cdr : ExprBase {
+	Expr ex;
+	Cdr(const Expr &);
+	virtual Value eval(Assoc &) override;
+};
+
+#endif
 
 #endif

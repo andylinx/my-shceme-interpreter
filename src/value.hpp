@@ -8,6 +8,8 @@
 #include <cstring>
 #include <vector>
 
+#define Lazy_tag
+
 struct ValueBase {
 	ValueType v_type;
 	ValueBase(ValueType);
@@ -32,7 +34,13 @@ struct Assoc {
 	AssocList& operator *();
 	AssocList * get() const;
 };
+struct Real_Void : ValueBase {
+	Real_Void();
+	virtual void show(std::ostream &) override;
+};
+Value Real_VoidV();
 
+#ifndef Lazy_tag
 struct AssocList {
 	std::string	x;
 	Value		v;
@@ -40,12 +48,18 @@ struct AssocList {
 	AssocList(const std::string &, const Value &, Assoc &);
 };
 
-struct Real_Void : ValueBase {
-	Real_Void();
-	virtual void show(std::ostream &) override;
-};
-Value Real_VoidV();
 
+
+#else
+struct AssocList {
+	std::string	x;
+	Value		v;
+	Expr		ex;
+	bool		flag; // whether this parameter has been calculated yet
+	Assoc		ee, next;
+	AssocList(const std::string &, const Value &, const Expr &, Assoc &, Assoc &);
+};
+#endif
 struct Void : ValueBase {
 	Void();
 	virtual void show(std::ostream &) override;
@@ -114,7 +128,11 @@ Value StringV(const std :: string &);
 std::ostream &operator<<(std::ostream &, Value &);
 
 Assoc empty();
+#ifndef Lazy_tag
 Assoc extend(const std :: string&, const Value &, Assoc &);
+#else
+Assoc extend(const std :: string&, const Value &, const Expr &, Assoc &, Assoc &);
+#endif
 void modify(const std :: string&, const Value &, Assoc &);
 Value find(const std::string &, Assoc &);
 #endif

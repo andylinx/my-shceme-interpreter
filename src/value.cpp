@@ -1,10 +1,17 @@
 #include "value.hpp"
 
+#ifndef Lazy_tag
 AssocList::AssocList(const std::string &x, const Value &v, Assoc &next)
 	: x(x), v(v), next(next)
 {
 }
-
+#else
+// if you want to optimize the evaluation of the parameters, we need to store the expression and the environment
+AssocList::AssocList(const std::string &x, const Value &v, const Expr &ex, Assoc &now, Assoc &next)
+	: x(x), v(v), ex(ex), next(next), ee(now), flag(false)
+{
+}
+#endif
 Assoc::Assoc(AssocList *x) : ptr(x)
 {
 }
@@ -25,12 +32,18 @@ Assoc empty()
 {
 	return Assoc(nullptr);
 }
-
+#ifndef Lazy_tag
 Assoc extend(const std::string &x, const Value &v, Assoc &lst)
 {
 	return Assoc(new AssocList(x, v, lst));
 }
-
+Value find(const std::string &x, Assoc &l)
+{
+	for (auto i = l; i.get() != nullptr; i = i->next)
+		if (x == i->x)
+			return i->v;
+	return Value(nullptr);
+}
 void modify(const std::string &x, const Value &v, Assoc &lst)
 {
 	for (auto i = lst; i.get() != nullptr; i = i->next)
@@ -39,15 +52,38 @@ void modify(const std::string &x, const Value &v, Assoc &lst)
 			return;
 		}
 }
-
+#else
+Assoc extend(const std::string &x, const Value &v, const Expr &ex, Assoc &ee, Assoc &lst)
+{
+	return Assoc(new AssocList(x, v, ex, ee, lst));
+}
+void modify(const std::string &x, const Value &v, Assoc &lst)
+{
+	for (auto i = lst; i.get() != nullptr; i = i->next)
+		if (x == i->x) {
+			i->v = v;
+			i->flag = true;
+			return;
+		}
+}
+// find the value of the parameter
+// if not calculated, calculate it and store it
 Value find(const std::string &x, Assoc &l)
 {
 	for (auto i = l; i.get() != nullptr; i = i->next)
-		if (x == i->x)
-			return i->v;
+		if (x == i->x) {
+			if (i->flag) {
+				return i->v;
+			} else {
+				i->flag = true;
+				Assoc etmp = i->ee;
+				i->v = i->ex->eval(etmp);
+				return i->v;
+			}
+		}
 	return Value(nullptr);
 }
-
+#endif
 std::ostream &operator<<(std::ostream &os, Value &v)
 {
 	v->show(os);
@@ -61,10 +97,6 @@ void ValueBase::showCdr(std::ostream &os)
 	os << ')';
 }
 
-void Real_Void :: show(std::ostream &os)
-{
-	os << "something went wrong!";
-}
 void Void::show(std::ostream &os)
 {
 	os << "#<void>";
@@ -135,13 +167,6 @@ ValueBase& Value :: operator *()
 ValueBase * Value :: get() const
 {
 	return ptr.get();
-}
-Real_Void :: Real_Void() : ValueBase(V_REAL_VOID)
-{
-}
-Value Real_VoidV()
-{
-	return Value(new Real_Void());
 }
 
 Void::Void() : ValueBase(V_VOID)

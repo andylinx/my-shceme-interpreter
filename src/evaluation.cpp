@@ -7,6 +7,7 @@
 #include <vector>
 #include <map>
 
+
 extern std :: map<std :: string, ExprType> primitives;
 extern std :: map<std :: string, ExprType> reserved_words;
 using std :: vector;
@@ -25,7 +26,11 @@ Value Let::eval(Assoc &env)
 
 	for (auto &[x, y]:bind) {
 		Assoc ee = env;
+#ifndef Lazy_tag
 		e = extend(x, y->eval(ee), e);
+#else
+		e = extend(x, IntegerV(0), y, ee, e);
+#endif
 	}
 	return body->eval(e);
 }                              // let expression
@@ -49,19 +54,28 @@ Value Apply::eval(Assoc &e)
 	int sz = clsr->parameters.size();
 	for (int i = 0; i < sz; i++) {
 		string ss = clsr->parameters[i];
+
 		Assoc ee = e;
+#ifndef Lazy_tag
 		Value v = rand[i]->eval(ee);
 		env = extend(ss, v, env);
+#else
+		env = extend(ss, IntegerV(0), rand[i], ee, env);
+#endif
 	}
 	return clsr->e->eval(env);
 }                              // for function calling
 
 Value Letrec::eval(Assoc &env)
 {
-	Assoc ee = env;
+	Assoc ee = env, e1 = env;
 
 	for (auto &[x, y]:bind) {
+#ifndef Lazy_tag
 		ee = extend(x, Real_VoidV(), ee);
+#else
+		ee = extend(x, Real_VoidV(), y, e1, ee);
+#endif
 		Value val = y->eval(ee);
 		Real_Void *rv = dynamic_cast <Real_Void *> (val.get());
 		if (rv) throw RuntimeError("parameter not defined yet!");
@@ -171,7 +185,6 @@ Value Binary::eval(Assoc &e)
 
 	return evalRator(val1, val2);
 }                               // evaluation of two-operators primitive
-
 Value Unary::eval(Assoc &e)
 {
 	Assoc ee = e;
@@ -179,7 +192,6 @@ Value Unary::eval(Assoc &e)
 
 	return evalRator(val);
 }                                                               // evaluation of single-operator primitive
-
 Value Mult::evalRator(const Value &rand1, const Value &rand2)
 {
 	if (rand1->v_type != V_INT || rand2->v_type != V_INT)
@@ -324,6 +336,8 @@ Value Not::evalRator(const Value &rand)
 	return Value(new Boolean(!is_true(rand)));
 }                                          // not
 
+#ifndef Lazy_tag
+
 Value Car::evalRator(const Value &rand)
 {
 	if (rand->v_type != V_PAIR)
@@ -331,7 +345,6 @@ Value Car::evalRator(const Value &rand)
 	Pair *val = dynamic_cast <Pair *> (rand.get());
 	return val->car;
 }                                          // car
-
 Value Cdr::evalRator(const Value &rand)
 {
 	if (rand->v_type != V_PAIR)
@@ -339,3 +352,66 @@ Value Cdr::evalRator(const Value &rand)
 	Pair *val = dynamic_cast <Pair *> (rand.get());
 	return val->cdr;
 }                                          // cdr
+#else
+// we only need to cacluate half of the car and cdr
+Value Car::eval(Assoc &e)
+{
+	Quote *tmp = dynamic_cast <Quote *> (ex.get());
+	Assoc ee = e;
+
+	if (tmp) {
+		List *lst = dynamic_cast <List *> ((*tmp).s.get());
+		if (!lst) throw RuntimeError("wrong type!!");
+		return Value(lst->stxs[0]->parse(ee)->eval(ee));
+	} else {
+		Cons *cos = dynamic_cast <Cons *> (ex.get());
+		if (cos) {
+			return Value(cos->rand1->eval(ee));
+		} else {
+			Var *v = dynamic_cast <Var *> (ex.get());
+			if (v) {
+				Value tv = v->eval(ee);
+				Pair *tp = dynamic_cast <Pair *> (tv.get());
+				if (!tp) throw RuntimeError("wrong type!!!");
+				return tp->car;
+			} else {
+				Value tv = this->ex->eval(ee);
+				Pair *tp = dynamic_cast <Pair *> (tv.get());
+				if (!tp) throw RuntimeError("wrong type!!!");
+				return tp->car;
+			}
+		}
+	}
+}
+
+Value Cdr::eval(Assoc &e)
+{
+	Quote *tmp = dynamic_cast <Quote *> (ex.get());
+	Assoc ee = e;
+
+	if (tmp) {
+		List *lst = dynamic_cast <List *> ((*tmp).s.get());
+		if (!lst) throw RuntimeError("wrong type!!");
+		return quote_list(lst->stxs, 1, ee);
+	} else {
+		Cons *cos = dynamic_cast <Cons *> (ex.get());
+		if (cos) {
+			return Value(cos->rand2->eval(ee));
+		} else {
+			Var *v = dynamic_cast <Var *> (ex.get());
+			if (v) {
+				Value tv = v->eval(ee);
+				Pair *tp = dynamic_cast <Pair *> (tv.get());
+				if (!tp) throw RuntimeError("wrong type!!!");
+				return tp->cdr;
+			} else {
+				Value tv = this->ex->eval(ee);
+				Pair *tp = dynamic_cast <Pair *> (tv.get());
+				if (!tp) throw RuntimeError("wrong type!!!");
+				return tp->cdr;
+			}
+		}
+	}
+}
+
+#endif
