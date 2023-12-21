@@ -40,15 +40,11 @@ Expr Identifier :: parse(Assoc &env)
 		return Expr(new ExprBase(reserved_words[s]));
 	if (primitives.find(s) != primitives.end())
 		return Expr(new ExprBase(primitives[s]));
-		<< << << < HEAD
-		env = extend(s, Real_VoidV(), env);
-	== == == =
 #ifdef Lazy_tag
-		env = extend(s, IntegerV(0), holder, env, env);
+	env = extend(s, Real_VoidV(), holder, env, env);
 #else
-		env = extend(s, IntegerV(0), env);
+	env = extend(s, Real_VoidV(), env);
 #endif
-	>> >> >> > Extension
 	return Expr(new Var(s));
 }
 
@@ -100,15 +96,11 @@ Expr List :: parse(Assoc &env)
 				throw RuntimeError("invalid format of let!");
 			Identifier *v = dynamic_cast <Identifier *> (ele->stxs[0].get());
 			if (!v) throw RuntimeError("invalid format of let!");
-				<< << << < HEAD
-				ee = extend(v->s, Real_VoidV(), ee);
-			== == == =
 #ifdef Lazy_tag
-				ee = extend(v->s, IntegerV(0), holder, ee, ee);
+			ee = extend(v->s, Real_VoidV(), holder, ee, ee);
 #else
-				ee = extend(v->s, IntegerV(0), ee);
+			ee = extend(v->s, Real_VoidV(), ee);
 #endif
-			>> >> >> > Extension
 			Assoc e2 = env;
 			res.push_back({ v->s, ele->stxs[1]->parse(e2) });
 		}
@@ -126,17 +118,13 @@ Expr List :: parse(Assoc &env)
 		Assoc ee = e;
 		for (auto & sy:lst->stxs) {
 			Identifier *v = dynamic_cast <Identifier *> (sy.get());
-				<< << << < HEAD
-				if (!v) throw RuntimeError("invalid format of lambda!");
-				ee = extend(v->s, Real_VoidV(), ee);
-			== == == =
-				if (!v) throw RuntimeError("invalid format of let!");
+
+			if (!v) throw RuntimeError("invalid format of let!");
 #ifdef Lazy_tag
-			ee = extend(v->s, IntegerV(0), holder, ee, ee);
+			ee = extend(v->s, Real_VoidV(), holder, ee, ee);
 #else
-			ee = extend(v->s, IntegerV(0), ee);
+			ee = extend(v->s, Real_VoidV(), ee);
 #endif
-			>> >> >> > Extension
 			res.push_back(v->s);
 		}
 		Expr body = u[2]->parse(ee);
@@ -177,7 +165,6 @@ Expr List :: parse(Assoc &env)
 	{
 		if (u.size() != 4)
 			throw RuntimeError("invalid number of parameters");
-		// cerr << "!!!" << endl;
 		Assoc e1 = env, e2 = env, e3 = env;
 		return Expr(new If(u[1].parse(e1), u[2].parse(e2), u[3].parse(e3)));
 		break;

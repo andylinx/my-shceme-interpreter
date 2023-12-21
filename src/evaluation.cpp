@@ -70,18 +70,27 @@ Value Letrec::eval(Assoc &env)
 {
 	Assoc ee = env, e1 = env;
 
-	for (auto &[x, y]:bind) {
 #ifndef Lazy_tag
+	for (auto &[x, y]:bind) {
 		ee = extend(x, Real_VoidV(), ee);
-#else
-		ee = extend(x, Real_VoidV(), y, e1, ee);
-#endif
 		Value val = y->eval(ee);
 		Real_Void *rv = dynamic_cast <Real_Void *> (val.get());
 		if (rv) throw RuntimeError("parameter not defined yet!");
 	}
 	for (auto &[x, y]:bind)
 		modify(x, y->eval(ee), ee);
+#else
+	for (auto &[x, y]:bind) {
+		ee = extend(x, Real_VoidV(), y, e1, ee);
+		Value val = y->eval(ee);
+		Real_Void *rv = dynamic_cast <Real_Void *> (val.get());
+		if (rv) throw RuntimeError("parameter not defined yet!");
+	}
+	for (auto &[x, y]:bind)
+		modify(x, y->eval(ee), ee);
+#endif
+
+
 	return body->eval(ee);
 }                                 // letrec expression
 

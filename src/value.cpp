@@ -77,7 +77,9 @@ Value find(const std::string &x, Assoc &l)
 			} else {
 				i->flag = true;
 				Assoc etmp = i->ee;
-				i->v = i->ex->eval(etmp);
+				Real_Void *rv = dynamic_cast <Real_Void *> (i->v.get());
+				if (!rv)
+					i->v = i->ex->eval(etmp);
 				return i->v;
 			}
 		}
@@ -101,6 +103,11 @@ void Void::show(std::ostream &os)
 {
 	os << "#<void>";
 }
+void Real_Void::show(std::ostream &os)
+{
+	os << "something went wrong";
+}
+
 
 void Integer::show(std::ostream &os)
 {
@@ -167,6 +174,14 @@ ValueBase& Value :: operator *()
 ValueBase * Value :: get() const
 {
 	return ptr.get();
+}
+
+Real_Void::Real_Void() : ValueBase(V_REAL_VOID)
+{
+}
+Value Real_VoidV()
+{
+	return Value(new Real_Void());
 }
 
 Void::Void() : ValueBase(V_VOID)
