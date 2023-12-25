@@ -140,10 +140,16 @@ Value Begin::eval(Assoc &e)
 {
 	Value res(nullptr);
 
+#ifndef Lazy_tag
 	for (auto &u:es) {
 		Assoc ee = e;
 		res = u->eval(ee);
 	}
+#else
+	Assoc ee = e;
+	int gs = es.size();
+	res = es[gs - 1]->eval(ee);
+#endif
 	return res;
 }                              // begin expression
 // to eval the quote
