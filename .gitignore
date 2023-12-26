@@ -4,3 +4,6 @@ myscheme
 score/*.txt
 
 score/*.out
+
+(let ([undef ((lambda (x) (x x)) (lambda (x) (x x)))])
+    (car (cons 1 undef)))

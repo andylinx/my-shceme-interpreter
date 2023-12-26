@@ -8,8 +8,6 @@
 #include <cstring>
 #include <vector>
 
-#define Lazy_tag
-
 struct ValueBase {
 	ValueType v_type;
 	ValueBase(ValueType);

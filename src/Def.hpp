@@ -2,6 +2,7 @@
 #define DEF_HPP
 
 // By luke36
+#define Lazy_tag
 
 #include <string>
 #include <utility>

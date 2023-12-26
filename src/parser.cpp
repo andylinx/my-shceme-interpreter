@@ -148,7 +148,7 @@ Expr List :: parse(Assoc &env)
 #ifdef Lazy_tag
 			ee = extend(v->s, Real_VoidV(), holder, ee, ee);
 #else
-			ee = extend(v->s, Real_VoidV(0), ee);
+			ee = extend(v->s, Real_VoidV(), ee);
 #endif
 		}
 		for (auto &sy : lst->stxs) {

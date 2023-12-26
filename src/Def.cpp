@@ -3,7 +3,6 @@
 std :: map<std :: string, ExprType> primitives;
 std :: map<std :: string, ExprType> reserved_words;
 
-#define Lazy_tag
 
 void initPrimitives()
 {

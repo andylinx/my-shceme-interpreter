@@ -8,8 +8,6 @@
 #include <cstring>
 #include <vector>
 
-#define Lazy_tag
-
 struct ExprBase {
 	ExprType e_type;
 	ExprBase(ExprType);
